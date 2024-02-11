@@ -1,23 +1,24 @@
         .orig x3000
 
-        ; Initialize variables
+        ; Print a prompt message
         LEA     R0, PROMPT        ; Load address of prompt string into R0
         PUTS                        ; Print prompt string
-        LEA     R0, INPUT          ; Load address where input will be stored into R0
-        GETS                        ; Read input string from console
-        LEA     R1, INPUT          ; Load address of input string into R1
 
-PRINT_LOOP:
-        LDR     R2, R1, #0        ; Load character from input string into R2
-        BRz     PRINT_DONE        ; If null terminator is encountered, end printing
-        OUT                         ; Print character to console
-        ADD     R1, R1, #1        ; Increment pointer to next character
-        BR      PRINT_LOOP        ; Repeat printing loop
+        ; Read a character from console
+        GETC                        ; Read character from console
+        AND     R1, R1, #0         ; Clear R1
+        ADD     R1, R1, R0         ; Store the character in R1
 
-PRINT_DONE:
-        HALT                        ; Halt the program
+        ; Print the character
+        LEA     R0, OUTPUT        ; Load address of output string into R0
+        PUTS                        ; Print output string
+        ADD     R0, R0, R1         ; Add the character from R1 to the output string
+        PUTS                        ; Print the character
 
-PROMPT  .STRINGZ "Enter a string: "
-INPUT   .BLKW   80                ; Buffer to store input string
+        ; Halt the program
+        HALT
+
+PROMPT  .STRINGZ "Enter a character: "
+OUTPUT  .STRINGZ "You entered: "
 
         .end
