@@ -2,9 +2,10 @@
             
             AND         R2, R2, #0      ; Clear R2
             AND         R3, R3, #0      ; Clear R3
-            
+
+GETSP       
             HALT
             
-PACKED      .FILL
+PACKED      .FILL       3
             
             .END
