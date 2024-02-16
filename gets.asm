@@ -1,24 +1,28 @@
-        .orig x3000
+            .orig       x3000
+            
+            LD          R1, STRING      ; R1 will be used as location memory to store things
+            AND         R2, R2, #0      ; Clear R2
+            AND         R3, R3, #0      ; Clear R3
+            
+            
+            LEA         R0, PROMPT      ; Loads address of prompt into R0
+            PUTS                        ; Prints the string stored in R0
+            
+LOOP        GETC                        ; Get a letter and put it in R0
+            PUTC                        ; Echo the character just typed for the user
+            ADD         R1, R1, R0      ; Copy the value of R0 into R1
+            BRnzp LOOP                  ; Goes to the beginning of the loop
+            
+            
+            HALT
+            
+NEWLINE     .FILL       xA              ; Stores a newline character
+PROMPT      .STRINGZ    "Enter a string: "
+STRING      .BLKW       100       
+            .END
+            
+            .ORIG       x3100
+            .STRINGZ    STRING 
+            .END
 
-        ; Print a prompt message
-        LEA     R0, PROMPT        ; Load address of prompt string into R0
-        PUTS                        ; Print prompt string
-
-        ; Read a character from console
-        GETC                        ; Read character from console
-        AND     R1, R1, #0         ; Clear R1
-        ADD     R1, R1, R0         ; Store the character in R1
-
-        ; Print the character
-        LEA     R0, OUTPUT        ; Load address of output string into R0
-        PUTS                        ; Print output string
-        ADD     R0, R0, R1         ; Add the character from R1 to the output string
-        PUTS                        ; Print the character
-
-        ; Halt the program
-        HALT
-
-PROMPT  .STRINGZ "Enter a character: "
-OUTPUT  .STRINGZ "You entered: "
-
-        .end
+            .END
