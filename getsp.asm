@@ -32,17 +32,15 @@ GETSP       GETC                        ; Gets one char from user input
             STR         R4, R1, #0      ; Put R1 into R4 and add 0
             ADD         R1, R1, #1      ; Incriment the R1 pointer
             
+            BRz         GETSP           ; Go to beginning of the loop
+            
             AND         R0, R0, #0      ; Clear out R0
             STR         R0, R1, #1      
-            
-            
-            
-            BRz         GETSP           ; Go to beginning of the loop
             
             LEA         R0, NEWLINE     ; Loads newline into R0
             PUTS
             
-            LEA         R0, ENTER       ; Loads enter into R0
+            LEA         R0, ENTERED     ; Loads enter into R0
             PUTS
             
             LD          R0, STRING      ; Loads string into R0
@@ -52,10 +50,8 @@ GETSP       GETC                        ; Gets one char from user input
             HALT
             
 PROMPT      .STRINGZ    "Enter a string: "
-ENTER       .STRINGZ    "Entered string: "
+ENTERED     .STRINGZ    "Entered string: "
 NEWLINE     .FILL       xA
-            .END
-            
-            .ORIG       x3100
 STRING      .FILL       x3100
             .END
+            
