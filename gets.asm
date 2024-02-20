@@ -9,7 +9,7 @@
             PUTS                        ; Prints the string stored in R0
             
 GETS        GETC                        ; Get a letter and put it in R0
-            AND         R2, R0, #10     ; Check if the new char is a carrage return
+            ADD         R2, R0, #-10     ; Check if the new char is a newline
             BRz         DONE
             OUT                         ; Echo char
             STR         R0, R1, #0      ; Stores R1 into R0
@@ -21,7 +21,8 @@ GETS        GETC                        ; Get a letter and put it in R0
 
 DONE        AND         R0, R0, #0      ; Append null at the end of the string
             STR         R0, R1, #0
-            LD          R0, CR          ; Add a carriage return to your string
+            
+            LEA         R0, NEWLINE
             OUT
             
             LEA         R0, ENTER
@@ -34,7 +35,8 @@ DONE        AND         R0, R0, #0      ; Append null at the end of the string
 PROMPT      .STRINGZ    "Enter a string: "
 ENTER       .STRINGZ    "Entered string: "
 EOL         .FILL       #-29            ; End of line
-CR          .FILL       #10             ; Carriage return
+CR          .FILL       #-10             ; Carriage return
+NEWLINE     .FILL       xA
             .END
             
             .ORIG       x3100
