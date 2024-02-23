@@ -9,9 +9,9 @@
             PUTS                        ; Prints the string stored in R0
             
 GETS        GETC                        ; Get a letter and put it in R0
-            ADD         R2, R0, #-10     ; Check if the new char is a newline
-            BRz         DONE
             OUT                         ; Echo char
+            ADD         R2, R0, #-10    ; Check if the new char is a newline
+            BRz         DONE
             STR         R0, R1, #0      ; Stores R1 into R0
             ADD         R1, R1, #1      ; Increment R1
             AND         R3, R3, #1      ; Increment R3 to match the size of the word
@@ -19,7 +19,8 @@ GETS        GETC                        ; Get a letter and put it in R0
             ADD         R4, R3, R6      ; Check if we reached max string len
             BRn         GETS            ; Goes to the beginning of the loop
 
-DONE        AND         R0, R0, #0      ; Append null at the end of the string
+DONE        
+            AND         R0, R0, #0      ; Clear R0
             STR         R0, R1, #0
             
             LEA         R0, NEWLINE
@@ -35,7 +36,6 @@ DONE        AND         R0, R0, #0      ; Append null at the end of the string
 PROMPT      .STRINGZ    "Enter a string: "
 ENTER       .STRINGZ    "Entered string: "
 EOL         .FILL       #-29            ; End of line
-CR          .FILL       #-10             ; Carriage return
 NEWLINE     .FILL       xA
             .END
             
