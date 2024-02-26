@@ -20,9 +20,10 @@ ADDRESS2    .FILL       x0000
             
             
             .ORIG       x4000           ; Read a 4 digit hex and return it in R0
-IPNPUT            
+INPUT            
             GETC                        ; Get a character from user input
             OUT                         ; Echo char
+            ADD         R0, R0, #-48     ; Convert to binary
             
             
             RTI                         ; Return from interupt
