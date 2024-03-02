@@ -4,6 +4,8 @@
             PUTS                        ; Prints out prompt1 that is stored in R0
             TRAP        x40             ; Reads a 4 digit hex and returns it in R0
             
+            LEA         R0, NEWLINE
+            PUTS
                                         ; Get ending address
             LEA         R0, PROMPT2     ; Stores the contents of prompt1 into R0
             PUTS                        ; Prints out prompt2 that is stored in R0
@@ -13,6 +15,7 @@
             
 PROMPT1     .STRINGZ    "Enter starting memory address: x"
 PROMPT2     .STRINGZ    "Enter ending memory address: x"
+NEWLINE     .FILL       #10             ; Stores the newline char
 ADDRESS1    .FILL       x0000
 ADDRESS2    .FILL       x0000
             
@@ -23,17 +26,33 @@ ADDRESS2    .FILL       x0000
 INPUT            
             GETC                        ; Get a character from user input
             OUT                         ; Echo char
-            LD          R1, BINNUM      ; Add 48 to R1
-            NOT         R1, R1          ; Get 2s complement
-            ADD         R1, R1, #1      ; 
+            
+            ; Check validity of the char
+            ; Check to see if they are in the ranges
+            ; of numbers, capital letters, and lowercase letters
+            
+            ; Checks for numbers
+            LD          R1, BINNUM      ; Put -48 to R1
+            ADD         R2, R0, #0      ; Adds R0 to R2
+            ADD         R2, R1, #0      ; Adds R1 to R2
+            BRn         NO
+            BRzp        YES
+            
+NO          LEA         R0, INVALID
+            PUTS
+            
+YES         LEA         R0, WORKS
+            PUTS
             
             
             RTI                         ; Return from interupt
             
 MEMORY      .FILL       x0000           ; Space for user input
-BINNUM      .FILL       48              ; Store the subtraction for numbers
-BINCAP      .FILL       65              ; Store the subtraction for capital letters
-BINLOW      .FILL       97              ; Store the subtraction for lowercase letters
+BINNUM      .FILL       -48             ; Store the subtraction for numbers
+BINCAP      .FILL       -65             ; Store the subtraction for capital letters
+BINLOW      .FILL       -97             ; Store the subtraction for lowercase letters
+WORKS       .STRINGZ    "Works"
+INVALID     .STRINGZ    "Invalid input"
             .END
             
             
