@@ -37,8 +37,8 @@
             
             HALT
             
-INPUT1      .BLKW       #1
-INPUT2      .BLKW       #1
+INPUT1      .BLKW       #4
+INPUT2      .BLKW       #4
 PROMPT1     .STRINGZ    "Enter starting memory address: x"
 PROMPT2     .STRINGZ    "Enter ending memory address: x"
 PROMPT3     .STRINGZ    "Memory Contents x"
@@ -87,15 +87,15 @@ INPUTCHAR
             RET                         ; Return to call
             
 GETCHAR            
-            GETC                        ; Get a character from user input
-            OUT                         ; Echo char
-            
             ; Check validity of the char
             ; Check to see if they are in the ranges
             ; of numbers, capital letters, and lowercase letters
             ;
             ; Also put the value of the hex into binary and store
             ; it into R4 to combine later
+            
+            GETC                        ; Get a character from user input
+            OUT                         ; Echo char
             
             ; Checks for numbers
             ; Lower limit
