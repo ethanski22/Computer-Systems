@@ -22,8 +22,42 @@ ADDRESS2    .FILL       x0000
             .END
             
             
-            .ORIG       x4000           ; Read a 4 digit hex and return it in R0
+            .ORIG       x4000           ; Read a 4 digit hex, check it, and return it in R0
 INPUT            
+            AND         R4, R4, #0      ; Clears R4 to store user input
+            JSR         GETCHAR         ; Jumpt to the start of INPUT
+            ;ST          R0, FIRST
+            ;BR          INPUTCHAR
+            
+            JSR         GETCHAR
+            ;ST          R0, SECOND
+            ;BR          INPUTCHAR
+            
+            JSR         GETCHAR
+            ;ST          R0, THIRD
+            ;BR          INPUTCHAR
+            
+            JSR         GETCHAR
+            ;ST          R0, FOURTH
+            ;BR          INPUTCHAR
+            
+            ; Combine all of the chars into one 16 bit value
+            
+            
+            RTI                         ; Return from interupt
+            
+INPUTCHAR   
+            ADD         R4, R4, R0      ; Add the next user input to R3
+            
+            ; Moves over the inputted char to make room for the next one
+            ADD         R4, R4, R4      ; Hacked shift left 1
+            ADD         R4, R4, R4      ; Hacked shift left 1
+            ADD         R4, R4, R4      ; Hacked shift left 1
+            ADD         R4, R4, R4      ; Hacked shift left 1
+            
+            RET                         ; Return to call
+            
+GETCHAR            
             GETC                        ; Get a character from user input
             OUT                         ; Echo char
             
@@ -32,25 +66,63 @@ INPUT
             ; of numbers, capital letters, and lowercase letters
             
             ; Checks for numbers
-            LD          R1, BINNUM      ; Put -48 to R1
-            ADD         R2, R0, #0      ; Adds R0 to R2
-            ADD         R2, R1, #0      ; Adds R1 to R2
+            ; Lower limit
+            LD          R1, BINNUM
+            ADD         R2, R0, R1      ; Adds R1 and R0 and places it in R2
             BRn         NO
-            BRzp        YES
             
-NO          LEA         R0, INVALID
+            ; Upper limit
+            LD          R1, BINNUMC
+            ADD         R2, R0, R1      ; Adds R1 and R2 and places it in R2
+            BRnz        YES
+            
+            ; Checks for capital letters
+            ; Lower limit
+            LD          R1, BINCAP        ; Put -65 into R1, represents the ascii value for A
+            ADD         R2, R0, R1      ; Adds R1 and R0 and places it in R2
+            BRn         NO
+            
+            ; Upper limit
+            LD          R1, BINCAPC        ; Put -90 into R1, represents the ascii value for Z
+            ADD         R2, R0, R1      ; Adds R1 and R0 and places it in R2
+            BRnz        YES
+            
+            ; Checks for lowercase letters
+            ; Lower limit
+            LD          R1, BINLOW        ; Put -65 into R1, represents the ascii value for a
+            ADD         R2, R0, R1      ; Adds R1 and R0 and places it in R2
+            BRn         NO
+            
+            ; Upper limit
+            LD          R1, BINLOWC       ; Put -90 into R1, represents the ascii value for z
+            ADD         R2, R0, R1      ; Adds R2 and R1 and places it in R2
+            BRnz        YES
+            
+NO          LEA         R0, NEW_LINE
             PUTS
             
-YES         LEA         R0, WORKS
+            LEA         R0, INVALID     ; User input is invalid and will start at x0000
             PUTS
             
+            ; Put code here to put x0000 into R0
+            LD          R0, INVALIDMEM  ; Loads address of MEMORY into R0
+            RTI
             
-            RTI                         ; Return from interupt
+YES         RET                         ; Return to call
             
+FIRST       .BLKW       #1              ; Storage for first char
+SECOND      .BLKW       #1
+THIRD       .BLKW       #1
+FOURTH      .BLKW       #1
+NEW_LINE    .FILL       #10
 MEMORY      .FILL       x0000           ; Space for user input
-BINNUM      .FILL       -48             ; Store the subtraction for numbers
-BINCAP      .FILL       -65             ; Store the subtraction for capital letters
-BINLOW      .FILL       -97             ; Store the subtraction for lowercase letters
+INVALIDMEM  .FILL       x0000           ; Return this if the input is invalid
+BINNUM      .FILL       #-48             ; Store the subtraction for numbers
+BINNUMC     .FILL       #-57
+BINCAP      .FILL       #-65             ; Store the subtraction for capital letters
+BINCAPC      .FILL      #-70            ; Store the subtraction for capital letters
+BINLOW      .FILL       #-97             ; Store the subtraction for lowercase letters
+BINLOWC      .FILL      #-102           ; Store the subtraction for lowercase letters
 WORKS       .STRINGZ    "Works"
 INVALID     .STRINGZ    "Invalid input"
             .END
