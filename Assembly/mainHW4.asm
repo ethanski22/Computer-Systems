@@ -3,6 +3,7 @@
             LEA         R0, PROMPT1     ; Stores the contents of prompt1 into R0
             PUTS                        ; Prints out prompt1 that is stored in R0
             TRAP        x40             ; Reads a 4 digit hex and returns it in R0
+            ST          R0, INPUT1      ; Store the first input
             
             LEA         R0, NEWLINE
             PUTS
@@ -10,11 +11,39 @@
             LEA         R0, PROMPT2     ; Stores the contents of prompt1 into R0
             PUTS                        ; Prints out prompt2 that is stored in R0
             TRAP        x40             ; Reads a 4 digit hex and returns it in R0
+            ST          R0, INPUT2      ; Store the second input
+            
+            ; Print out the next line of text
+            ; "Memory contents x____ to x____:"
+            LEA         R0, NEWLINE
+            PUTS
+            PUTS
+            LEA         R0, PROMPT3
+            PUTS
+            LEA         R0, INPUT1
+            PUTS
+            ;TRAP        x41
+            LEA         R0, TOX
+            PUTS
+            LEA         R0, INPUT2
+            PUTS
+            ;TRAP        x41
+            LEA         R0, COLEN
+            PUTS
+            LEA         R0, NEWLINE
+            PUTS
+            
+            TRAP        x41             ; Display the users 4 digit hex value
             
             HALT
             
+INPUT1      .BLKW       #1
+INPUT2      .BLKW       #1
 PROMPT1     .STRINGZ    "Enter starting memory address: x"
 PROMPT2     .STRINGZ    "Enter ending memory address: x"
+PROMPT3     .STRINGZ    "Memory Contents x"
+TOX         .STRINGZ    " to x"
+COLEN       .STRINGZ    ":"
 NEWLINE     .FILL       #10             ; Stores the newline char
 ADDRESS1    .FILL       x0000
 ADDRESS2    .FILL       x0000
@@ -24,6 +53,9 @@ ADDRESS2    .FILL       x0000
             
             .ORIG       x4000           ; Read a 4 digit hex, check it, and return it in R0
 INPUT            
+
+            ; MAKE SURE THE RETURN IS A 16 DIGIT VALUE
+            
             AND         R4, R4, #0      ; Clears R4 to store user input
             JSR         GETCHAR         ; Jumpt to the start of INPUT
             ;ST          R0, FIRST
@@ -39,16 +71,13 @@ INPUT
             
             JSR         GETCHAR
             ;ST          R0, FOURTH
-            ;BR          INPUTCHAR
             
             ; Combine all of the chars into one 16 bit value
-            
+            ADD         R0, R4, #0
             
             RTI                         ; Return from interupt
             
 INPUTCHAR   
-            ADD         R4, R4, R0      ; Add the next user input to R3
-            
             ; Moves over the inputted char to make room for the next one
             ADD         R4, R4, R4      ; Hacked shift left 1
             ADD         R4, R4, R4      ; Hacked shift left 1
@@ -64,6 +93,9 @@ GETCHAR
             ; Check validity of the char
             ; Check to see if they are in the ranges
             ; of numbers, capital letters, and lowercase letters
+            ;
+            ; Also put the value of the hex into binary and store
+            ; it into R4 to combine later
             
             ; Checks for numbers
             ; Lower limit
@@ -73,6 +105,8 @@ GETCHAR
             
             ; Upper limit
             LD          R1, BINNUMC
+            LD          R3, BINNUM
+            ADD         R4, R0, R3
             ADD         R2, R0, R1      ; Adds R1 and R2 and places it in R2
             BRnz        YES
             
@@ -84,6 +118,9 @@ GETCHAR
             
             ; Upper limit
             LD          R1, BINCAPC        ; Put -90 into R1, represents the ascii value for Z
+            LD          R3, BINCAP
+            ADD         R4, R0, R3
+            ADD         R4, R4, #10
             ADD         R2, R0, R1      ; Adds R1 and R0 and places it in R2
             BRnz        YES
             
@@ -95,6 +132,9 @@ GETCHAR
             
             ; Upper limit
             LD          R1, BINLOWC       ; Put -90 into R1, represents the ascii value for z
+            LD          R3, BINLOW
+            ADD         R4, R0, R3
+            ADD         R4, R4, #10
             ADD         R2, R0, R1      ; Adds R2 and R1 and places it in R2
             BRnz        YES
             
@@ -110,12 +150,7 @@ NO          LEA         R0, NEW_LINE
             
 YES         RET                         ; Return to call
             
-FIRST       .BLKW       #1              ; Storage for first char
-SECOND      .BLKW       #1
-THIRD       .BLKW       #1
-FOURTH      .BLKW       #1
 NEW_LINE    .FILL       #10
-MEMORY      .FILL       x0000           ; Space for user input
 INVALIDMEM  .FILL       x0000           ; Return this if the input is invalid
 BINNUM      .FILL       #-48             ; Store the subtraction for numbers
 BINNUMC     .FILL       #-57
@@ -135,8 +170,12 @@ INVALID     .STRINGZ    "Invalid input"
             
             .ORIG       x5000
 OUTPUT
+            LEA         R0, X
+            PUTS
             
             RTI                         ; Return from interupt
+            
+X           .STRINGZ    "x"
             .END
             
             
