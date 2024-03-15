@@ -41,8 +41,8 @@ INPUT1      .BLKW       #4
 INPUT2      .BLKW       #4
 PROMPT1     .STRINGZ    "Enter starting memory address: x"
 PROMPT2     .STRINGZ    "Enter ending memory address: x"
-PROMPT3     .STRINGZ    "Memory Contents x"
-TOX         .STRINGZ    " to x"
+PROMPT3     .STRINGZ    "Memory Contents "
+TOX         .STRINGZ    " to "
 COLEN       .STRINGZ    ":"
 NEWLINE     .FILL       #10             ; Stores the newline char
 ADDRESS1    .FILL       x0000
@@ -146,7 +146,7 @@ NO          LEA         R0, NEW_LINE
             
             ; Put code here to put x0000 into R0
             LD          R0, INVALIDMEM  ; Loads address of MEMORY into R0
-            RTI
+            RTI                         ; Return from interupt
             
 YES         RET                         ; Return to call
             
@@ -155,9 +155,9 @@ INVALIDMEM  .FILL       x0000           ; Return this if the input is invalid
 BINNUM      .FILL       #-48             ; Store the subtraction for numbers
 BINNUMC     .FILL       #-57
 BINCAP      .FILL       #-65             ; Store the subtraction for capital letters
-BINCAPC      .FILL      #-70            ; Store the subtraction for capital letters
+BINCAPC     .FILL       #-70            ; Store the subtraction for capital letters
 BINLOW      .FILL       #-97             ; Store the subtraction for lowercase letters
-BINLOWC      .FILL      #-102           ; Store the subtraction for lowercase letters
+BINLOWC     .FILL       #-102           ; Store the subtraction for lowercase letters
 WORKS       .STRINGZ    "Works"
 INVALID     .STRINGZ    "Invalid input"
             .END
@@ -166,6 +166,9 @@ INVALID     .STRINGZ    "Invalid input"
             .ORIG       x40             ; Trap x40
             .FILL       INPUT
             .END
+            
+            
+            
             
             
             .ORIG       x5000
