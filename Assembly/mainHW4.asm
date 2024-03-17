@@ -22,12 +22,12 @@
             PUTS
             LEA         R0, INPUT1
             PUTS
-            ;TRAP        x41
+            ; Output starting memory address
             LEA         R0, TOX
             PUTS
             LEA         R0, INPUT2
             PUTS
-            ;TRAP        x41
+            ; Output ending memory address
             LEA         R0, COLEN
             PUTS
             LEA         R0, NEWLINE
@@ -58,31 +58,36 @@ INPUT
             
             AND         R4, R4, #0      ; Clears R4 to store user input
             JSR         GETCHAR         ; Jumpt to the start of INPUT
-            ;ST          R0, FIRST
-            ;BR          INPUTCHAR
+            ST          R0, FIRST
             
             JSR         GETCHAR
-            ;ST          R0, SECOND
-            ;BR          INPUTCHAR
+            ST          R0, SECOND
             
             JSR         GETCHAR
-            ;ST          R0, THIRD
-            ;BR          INPUTCHAR
+            ST          R0, THIRD
             
             JSR         GETCHAR
-            ;ST          R0, FOURTH
+            ST          R0, FOURTH
             
             ; Combine all of the chars into one 16 bit value
-            ADD         R0, R4, #0
+            AND         R0, R0, #0
+            
+            ADD         R0, R0, FIRST
             
             RTI                         ; Return from interupt
             
-INPUTCHAR   
+
+FIRST       .BLKW       #4
+SECOND      .BLKW       #4
+THIRD       .BLKW       #4
+FOURTH      .BLKW       #4
+
+HACK   
             ; Moves over the inputted char to make room for the next one
-            ADD         R4, R4, R4      ; Hacked shift left 1
-            ADD         R4, R4, R4      ; Hacked shift left 1
-            ADD         R4, R4, R4      ; Hacked shift left 1
-            ADD         R4, R4, R4      ; Hacked shift left 1
+            ADD         R0, R0, R0      ; Hacked shift left 1
+            ADD         R0, R0, R0      ; Hacked shift left 1
+            ADD         R0, R0, R0      ; Hacked shift left 1
+            ADD         R0, R0, R0      ; Hacked shift left 1
             
             RET                         ; Return to call
             
@@ -108,7 +113,7 @@ GETCHAR
             LD          R3, BINNUM
             ADD         R4, R0, R3
             ADD         R2, R0, R1      ; Adds R1 and R2 and places it in R2
-            BRnz        YES
+            BRnz        ASSIGNNUM
             
             ; Checks for capital letters
             ; Lower limit
@@ -122,7 +127,7 @@ GETCHAR
             ADD         R4, R0, R3
             ADD         R4, R4, #10
             ADD         R2, R0, R1      ; Adds R1 and R0 and places it in R2
-            BRnz        YES
+            BRnz        ASSIGNLETTER
             
             ; Checks for lowercase letters
             ; Lower limit
@@ -136,7 +141,7 @@ GETCHAR
             ADD         R4, R0, R3
             ADD         R4, R4, #10
             ADD         R2, R0, R1      ; Adds R2 and R1 and places it in R2
-            BRnz        YES
+            BRnz        ASSIGNLETTER
             
 NO          LEA         R0, NEW_LINE
             PUTS
@@ -147,8 +152,154 @@ NO          LEA         R0, NEW_LINE
             ; Put code here to put x0000 into R0
             LD          R0, INVALIDMEM  ; Loads address of MEMORY into R0
             RTI                         ; Return from interupt
+        
+         
+            ; Check for each possible char
+            ; one by one till I get it right
+            ; then assign the correct binary
+            ; value to R0         
             
-YES         RET                         ; Return to call
+ASSIGNNUM
+            ; User input is still in R0
+            ; Limit is in R1
+            
+            AND         R2, R2, #0
+            
+            ; 0 starts at 48
+            
+            ADD         R2, R0, #0      ; Puts user input into R2
+            ADD         R2, R2, R1      ; Subtract 48 from user input
+            BRz         ZERO
+            
+            ADD         R2, R2, #1
+            BRz         ONE
+            
+            ADD         R2, R2, #1
+            BRz         TWO
+            
+            ADD         R2, R2, #1
+            BRz         THREE
+            
+            ADD         R2, R2, #1
+            BRz         FOUR
+            
+            ADD         R2, R2, #1
+            BRz         FIVE
+            
+            ADD         R2, R2, #1
+            BRz         SIX
+            
+            ADD         R2, R2, #1
+            BRz         SEVEN
+            
+            ADD         R2, R2, #1
+            BRz         EIGHT
+            
+            ADD         R2, R2, #1
+            BRz         NINE
+            
+
+ZERO        LD          R0, ZER
+            RET
+            
+ONE         LD          R0, ON
+            RET
+            
+TWO         LD          R0, TW
+            RET
+            
+THREE       LD          R0, THRE
+            RET
+            
+FOUR        LD          R0, FOU
+            RET
+            
+FIVE        LD          R0, FIV
+            RET
+            
+SIX         LD          R0, SI
+            RET
+            
+SEVEN       LD          R0, SEVE
+            RET
+            
+EIGHT       LD          R0, EIGH
+            RET
+            
+NINE        LD          R0, NIN
+            RET
+
+
+ZER         .FILL       #0000
+ON          .FILL       #0001
+TW          .FILL       #0010
+THRE        .FILL       #0011
+FOU         .FILL       #0100
+FIV         .FILL       #0101
+SI          .FILL       #0110
+SEVE        .FILL       #0111
+EIGH        .FILL       #1000
+NIN         .FILL       #1001
+            
+            RET
+            
+            
+ASSIGNLETTER   
+            ; Same code will work for both upper
+            ; and lower case letters since
+            ; the offset is still in R1
+            
+            ; User input is still in R0
+            ; Limit is in R1
+            
+            AND         R2, R2, #0
+
+            ADD         R2, R0, #0      ; Puts user input into R2
+            ADD         R2, R2, R1      ; Subtract 48 from user input
+            BRz         AA
+            
+            ADD         R2, R2, #1
+            BRz         BB
+            
+            ADD         R2, R2, #1
+            BRz         CC
+            
+            ADD         R2, R2, #1
+            BRz         DD
+            
+            ADD         R2, R2, #1
+            BRz         EE
+            
+            ADD         R2, R2, #1
+            BRz         FF
+            
+            
+AA          LD          R0, A
+            RET                         ; Return from call
+            
+BB          LD          R0, B
+            RET                         ; Return from call
+            
+CC          LD          R0, C
+            RET                         ; Return from call
+            
+DD          LD          R0, D
+            RET                         ; Return from call
+            
+EE          LD          R0, E
+            RET                         ; Return from call
+            
+FF          LD          R0, F
+            RET                         ; Return from call
+            
+A           .FILL       #1010
+B           .FILL       #1011
+C           .FILL       #1100
+D           .FILL       #1101
+E           .FILL       #1110
+F           .FILL       #1111
+
+            
             
 NEW_LINE    .FILL       #10
 INVALIDMEM  .FILL       x0000           ; Return this if the input is invalid
