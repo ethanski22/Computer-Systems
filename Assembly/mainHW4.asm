@@ -20,12 +20,12 @@
             PUTS
             LEA         R0, PROMPT3
             PUTS
-            LEA         R0, INPUT1
+            LD          R0, INPUT1
             PUTS
             ; Output starting memory address
             LEA         R0, TOX
             PUTS
-            LEA         R0, INPUT2
+            LD          R0, INPUT2
             PUTS
             ; Output ending memory address
             LEA         R0, COLEN
@@ -37,8 +37,8 @@
             
             HALT
             
-INPUT1      .BLKW       #4
-INPUT2      .BLKW       #4
+INPUT1      .BLKW       #1
+INPUT2      .BLKW       #1
 PROMPT1     .STRINGZ    "Enter starting memory address: x"
 PROMPT2     .STRINGZ    "Enter ending memory address: x"
 PROMPT3     .STRINGZ    "Memory Contents "
@@ -71,16 +71,31 @@ INPUT
             
             ; Combine all of the chars into one 16 bit value
             AND         R0, R0, #0
+            AND         R1, R1, #0
             
-            ADD         R0, R0, FIRST
+            LD          R1, FIRST       ; Loads the first char into R1
+            AND         R0, R0, R1      ; Combines R0 and R1
+            JSR         HACK            ; Shifts left 4 digits
+            
+            LD          R1, SECOND      ; Loads the first char into R1
+            AND         R0, R0, R1      ; Combines R0 and R1
+            JSR         HACK            ; Shifts left 4 digits
+            
+            LD          R1, THIRD       ; Loads the first char into R1
+            AND         R0, R0, R1      ; Combines R0 and R1
+            JSR         HACK            ; Shifts left 4 digits
+            
+            LD          R1, FOURTH      ; Loads the first char into R1
+            AND         R0, R0, R1      ; Combines R0 and R1
+            
             
             RTI                         ; Return from interupt
             
 
-FIRST       .BLKW       #4
-SECOND      .BLKW       #4
-THIRD       .BLKW       #4
-FOURTH      .BLKW       #4
+FIRST       .BLKW       #1
+SECOND      .BLKW       #1
+THIRD       .BLKW       #1
+FOURTH      .BLKW       #1
 
 HACK   
             ; Moves over the inputted char to make room for the next one
