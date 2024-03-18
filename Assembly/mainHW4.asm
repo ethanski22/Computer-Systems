@@ -33,7 +33,15 @@
             LEA         R0, NEWLINE
             PUTS
             
+            LD          R0, INPUT1
+            LD          R3, INPUT2
+            
+LOOP            
             TRAP        x41             ; Display the users 4 digit hex value
+            ADD         R4, R4, #0001   ; Add to get to the next value needed to display
+            NOT         R4, R4          ; Takes the negative R4 and places it into R4
+            ADD         R2, R3, R4      ; Add the end input to the current place
+            BRnz        LOOP            ; If the add is positive end the loop
             
             HALT
             
@@ -243,7 +251,8 @@ EIGHT       LD          R0, EIGH
             
 NINE        LD          R0, NIN
             RET
-
+            
+            ; Store the binary for the numbers 0-9
 
 ZER         .FILL       #0000
 ON          .FILL       #0001
@@ -306,6 +315,8 @@ EE          LD          R0, E
             
 FF          LD          R0, F
             RET                         ; Return from call
+            
+            ; Store the binary value for a-f
             
 A           .FILL       #1010
 B           .FILL       #1011
