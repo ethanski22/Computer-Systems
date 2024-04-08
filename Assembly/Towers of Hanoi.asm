@@ -68,7 +68,7 @@ numberOfDisks		.STRINGZ "How many disks (1-9): "
 
 
 
-            ;moveDisk(n,1,3,2)
+;moveDisk(n,1,3,2)
 MOVE_DISK
             
             ;Pushing return address onto stack.
@@ -120,7 +120,7 @@ NOT_BASE_CASE
             ;Every use of JSR changes the address of R7
             JSR     MOVE_DISK	
 
-	
+PSOLSTEP
             ;Part 1
             ;Move disk string
             AND     R0, R0, #0
